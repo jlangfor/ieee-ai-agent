@@ -1,8 +1,9 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
-  <title>Getting Started with Local AI Agents – Code‑Assist Copilot‑like</title>
+  <title>Getting Started with Local AI Agents</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,465 +20,561 @@
 
   <style>
     /* Smaller code fonts to fit more lines */
-    pre code {font-size: 0.85em;}
-    .container {display: flex; gap: 1rem;}
-    .col {flex: 1;}
+    pre code {
+      font-size: 0.85em;
+    }
+
+    .container {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .col {
+      flex: 1;
+    }
+
     .scrollable-slide {
-        height: 800px;
-        overflow-y: auto !important;
+      height: 800px;
+      overflow-y: auto !important;
     }
+
     ::-webkit-scrollbar {
-        width: 6px;
+      width: 6px;
     }
+
     ::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     }
+
     ::-webkit-scrollbar-thumb {
-    background-color: #333;
+      background-color: #333;
     }
+
     ::-webkit-scrollbar-corner {
-    background-color: #333;
+      background-color: #333;
     }
   </style>
 </head>
+
 <body>
 
-<div class="reveal">
-  <div class="slides">
+  <div class="reveal">
+    <div class="slides">
 
-    <!-- ==================== TITLE ==================== -->
-    <section data-auto-animate>
-      <h1>Getting Started with Local AI Agents</h1>
-      <h3>Building a Co‑pilot‑style code analyser</h3>
-      <p>🧑‍💻  <strong>Speaker:</strong> Josh Langford<br>📅 2025‑10‑23</p>
-    </section>
+      <!-- ==================== TITLE ==================== -->
+      <section data-auto-animate>
+        <h1>Getting Started with Local AI Agents</h1>
+        <h3>IEEE Computer Society</h3>
+        <p>🧑‍💻 <strong>Speaker:</strong> Josh Langford<br>📅 2025‑10‑23</p>
+      </section>
 
-    <!-- ==================== MOTIVATION ==================== -->
-    <section>
-      <h2>Why Build a Local Code‑Assist Agent?</h2>
-      <ul>
-        <li>💸 No per‑token SaaS fees – run on your own hardware.</li>
-        <li>🔐 Data never leaves the machine – full privacy.</li>
-        <li>⚡️ Latency: response in < 200 ms on a CPU/GPU.</li>
-        <li>🛠️ Full control over model version, prompts, and UI.</li>
-      </ul>
-    </section>
+      <section>
+        <h2>Agenda</h2>
+        <ul>
+          <li>Why Local AI Agents?</li>
+          <li>Architecture Overview</li>
+          <li>Tools & Technologies</li>
+          <li>Live Demo: Building a Code Assistant</li>
+          <li>Use Cases & Best Practices</li>
+          <li>Challenges & Solutions</li>
+          <li>Getting Started Resources</li>
+        </ul>
+      </section>
 
-    <!-- ==================== ARCHITECTURE OVERVIEW ==================== -->
-    <section data-auto-animate data-auto-animate-id="arch">
-      <h2>High‑level Architecture</h2>
-      <div class="container">
-        <div class="col">
-          <img class="r-frame" style="background: rgba(255, 255, 255, 0.338);" data-src="assets/AgentWorkflow.png" alt="Down arrow">
+      <!-- ==================== MOTIVATION ==================== -->
+      <section>
+        <h2>Why Build a Local Code‑Assist Agent?</h2>
+        <ul>
+          <li>💸 No per‑token SaaS fees – run on your own hardware.</li>
+          <li>🔐 Data never leaves the machine – full privacy.</li>
+          <li>⚡️ Latency: response in < 200 ms on a CPU/GPU.</li>
+          <li>🛠️ Full control over model version, prompts, and UI.</li>
+        </ul>
+      </section>
+
+      <!-- ==================== ARCHITECTURE OVERVIEW ==================== -->
+      <section data-auto-animate data-auto-animate-id="arch">
+        <h2>High‑level Architecture</h2>
+        <div class="container">
+          <div class="col">
+            <img class="r-frame" style="background: rgba(255, 255, 255, 0.338);" data-src="assets/AgentWorkflow.png"
+              alt="Down arrow">
+          </div>
+          <div class="col">
+            <ul>
+              <li>📦 <strong>UI layer</strong>: VS Code extension or simple CLI.</li>
+              <li>🧠 <strong>Agent service</strong>: Python (FastAPI) exposing an HTTP endpoint.</li>
+            </ul>
+          </div>
         </div>
-        <div class="col">
-          <ul>
-            <li>📦 <strong>UI layer</strong>: VS Code extension or simple CLI.</li>
-            <li>🧠 <strong>Agent service</strong>: Python (FastAPI) exposing an HTTP endpoint.</li>
-          </ul>
+      </section>
+
+      <section data-auto-animate data-auto-animate-id="arch">
+        <h2>High‑level Architecture</h2>
+        <div class="container">
+          <div class="col">
+            <img class="r-frame" style="background: rgba(255, 255, 255, 0.338);" data-src="assets/AgentWorkflow.png"
+              alt="Down arrow">
+          </div>
+          <div class="col">
+            <ul>
+              <li>🔍 <strong>Retriever</strong>: file‑system scan + fuzzy search (e.g. <code>llama‑index</code>).</li>
+              <li>🤖 <strong>LLM</strong>: Open‑source code model (CodeLlama‑7B, StarCoder, Mistral‑Code, etc.).</li>
+            </ul>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section data-auto-animate data-auto-animate-id="arch">
-      <h2>High‑level Architecture</h2>
-      <div class="container">
-        <div class="col">
-          <img class="r-frame" style="background: rgba(255, 255, 255, 0.338);" data-src="assets/AgentWorkflow.png" alt="Down arrow">
-        </div>
-        <div class="col">
-          <ul>
-            <li>🔍 <strong>Retriever</strong>: file‑system scan + fuzzy search (e.g. <code>llama‑index</code>).</li>
-            <li>🤖 <strong>LLM</strong>: Open‑source code model (CodeLlama‑7B, StarCoder, Mistral‑Code, etc.).</li>
-          </ul>
-        </div>
-      </div>
-    </section>
+      <!-- ==================== HARDWARE & SOFTWARE REQUIREMENTS ==================== -->
+      <section data-auto-animate data-auto-animate-id="reqs">
+        <h2>Hardware & Software Prereqs</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Minimum</th>
+              <th>Recommended</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CPU</td>
+              <td>8‑core modern x86_64</td>
+              <td>16‑core + AVX2</td>
+            </tr>
+            <tr>
+              <td>GPU</td>
+              <td>— (CPU‑only inference)</td>
+              <td>NVIDIA RTX 3070 / 12 GB VRAM or better</td>
+            </tr>
+            <tr>
+              <td>RAM</td>
+              <td>16 GB</td>
+              <td>32 GB+</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
-    <!-- ==================== HARDWARE & SOFTWARE REQUIREMENTS ==================== -->
-    <section data-auto-animate data-auto-animate-id="reqs">
-      <h2>Hardware & Software Prereqs</h2>
-      <table>
-        <thead><tr><th>Component</th><th>Minimum</th><th>Recommended</th></tr></thead>
-        <tbody>
-            <tr><td>CPU</td><td>8‑core modern x86_64</td><td>16‑core + AVX2</td></tr>
-            <tr><td>GPU</td><td>— (CPU‑only inference)</td><td>NVIDIA RTX 3070 / 12 GB VRAM or better</td></tr>
-            <tr><td>RAM</td><td>16 GB</td><td>32 GB+</td></tr>
-        </tbody>
-      </table>
-    </section>
+      <section data-auto-animate data-auto-animate-id="reqs">
+        <h2>Hardware & Software Prereqs</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Minimum</th>
+              <th>Recommended</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>OS</td>
+              <td>Linux / macOS / WSL2</td>
+              <td>Linux (Ubuntu 22.04)</td>
+            </tr>
+            <tr>
+              <td>Python</td>
+              <td>3.10</td>
+              <td>3.11</td>
+            </tr>
+            <tr>
+              <td>Libraries</td>
+              <td>pip, git</td>
+              <td>uv, poetry (optional)</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
-    <section data-auto-animate data-auto-animate-id="reqs">
-      <h2>Hardware & Software Prereqs</h2>
-      <table>
-        <thead><tr><th>Component</th><th>Minimum</th><th>Recommended</th></tr></thead>
-        <tbody>
-            <tr><td>OS</td><td>Linux / macOS / WSL2</td><td>Linux (Ubuntu 22.04)</td></tr>
-            <tr><td>Python</td><td>3.10</td><td>3.11</td></tr>
-            <tr><td>Libraries</td><td>pip, git</td><td>uv, poetry (optional)</td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <!-- ==================== SETTING UP THE ENVIRONMENT ==================== -->
-    <section>
-      <h2>Step 1 – Create a Python Virtual Environment</h2>
-      <pre><code class="language-bash">
+      <!-- ==================== SETTING UP THE ENVIRONMENT ==================== -->
+      <section>
+        <h2>Step 1 – Clone the Repository and Run the Install Script</h2>
+        <pre><code class="language-bash">
 # Create a new directory
 git clone https://github.com/jlangfor/ieee-ai-agent.git
 cd ieee-ai-agent
 
-# Recommended: use uv (fast) or python -m venv
-python -m venv .venv
-source .venv/bin/activate
-
-# Upgrade pip & install core deps
-pip install -U pip wheel
-pip install -r requirements.txt
+# Use the install.sh script to set up the environment
+./install.sh
       </code></pre>
-</section>
-<section>
-      <p><strong>requirements.txt</strong> (kept minimal for the demo):</p>
-      <pre><code class="language-text">
-fastapi[all]==0.112.0
-uvicorn[standard]==0.30.1
-torch==2.4.0  # CPU‑only wheel works on Linux/macOS
-transformers==4.44.2
-sentencepiece==0.2.0
-pydantic==2.8.2
-llama-index==0.10.38
-   </code></pre>
-    </section>
+      </section>
 
-    <!-- ==================== CHOOSING A MODEL ==================== -->
-    <section>
-      <h2>Step 2 – Pick a Code‑Specialised LLM</h2>
-      <ul>
-        <li><strong>CodeLlama‑7B‑Instruct</strong> – balanced performance/size.</li>
-        <li><strong>StarCoder‑Base‑15B</strong> – larger, better at multiline completions.</li>
-        <li><strong>Mistral‑Code‑7B‑Instruct</strong> – recent, good for low‑latency.</li>
-      </ul>
-      <p>We’ll use <code>codellama/CodeLlama-7b-Instruct-hf</code> from HuggingFace.</p>
+      <!-- ==================== CHOOSING A MODEL ==================== -->
+      <section>
+        <h2>Step 2 – Download the Model</h2>
+        <ul>
+          <li><strong>CodeLlama‑7B‑Instruct</strong> – balanced performance/size.</li>
+          <li><strong>StarCoder‑Base‑15B</strong> – larger, better at multiline completions.</li>
+          <li><strong>Mistral‑Code‑7B‑Instruct</strong> – recent, good for low‑latency.</li>
+        </ul>
+        <p>We’ll use <code>codellama/CodeLlama-7b-Instruct-hf</code> from Ollama.</p>
 
-    </section>
-    <section>
+      </section>
+      <section>
         <h2>Download Model</h2>
-      <pre><code class="language-bash">
-# One‑time model download (cached in ~/.cache/huggingface)
-pip install huggingface_hub==0.24.5
-git lfs install
-
-# Use HF CLI to download (optional)
-huggingface-cli download codellama/CodeLlama-7b-Instruct-hf \
-    --local-dir ./models/codellama-7b
+        <pre><code class="language-bash">
+# One‑time model download
+ollama pull codellama:7b
       </code></pre>
-    </section>
+      </section>
 
-    <!-- ==================== LOADING THE MODEL ==================== -->
-    <section>
-      <h2>Step 3 – Load the Model Efficiently</h2>
-      <p>We’ll use <code>transformers</code> with <code>torch.compile</code> and <code>bnb</code> 4‑bit quantisation for a 7 B model on a 12 GB GPU.</p>
-      <pre><code class="language-python" data-line-numbers="1-10|10-20|20-30|30-40">
-# file: src/model.py
-import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
-
-class CodeLLM:
-    def __init__(self, repo_id: str = "codellama/CodeLlama-7b-Instruct-hf"):
-        # 4‑bit quantisation – massive memory saving
-        quant_cfg = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_compute_dtype=torch.float16,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=True,
-        )
-        self.tokenizer = AutoTokenizer.from_pretrained(repo_id)
-        self.model = AutoModelForCausalLM.from_pretrained(
-            repo_id,
-            device_map="auto",
-            quantization_config=quant_cfg,
-            torch_dtype=torch.float16,
-            trust_remote_code=True,
-        )
-        # Compile for faster inference on recent PyTorch
-        if torch.cuda.is_available():
-            self.model = torch.compile(self.model, mode="max-autotune")
-
-    def complete(self, prompt: str, max_new_tokens: int = 256,
-                 temperature: float = 0.2, stop: list[str] | None = None) -> str:
-        inputs = self.tokenizer(prompt, return_tensors="pt").to(self.model.device)
-        generated = self.model.generate(
-            **inputs,
-            max_new_tokens=max_new_tokens,
-            temperature=temperature,
-            do_sample=False,
-            pad_token_id=self.tokenizer.eos_token_id,
-            stop_token_ids=[self.tokenizer.convert_tokens_to_ids(s) for s in (stop or [])],
-        )
-        text = self.tokenizer.decode(generated[0], skip_special_tokens=True)
-        # Strip the original prompt
-        return text[len(prompt):].lstrip()
+      <!-- ==================== LOADING THE MODEL ==================== -->
+      <section>
+        <h2>Step 3 – Code Assistant - Part 1: :API Client</h2>
+        <pre><code class="language-python" data-line-numbers="1-10|10-20|20-30|30-35">
+          # local_code_assistant.py
+          import requests
+          import json
+          import sys
+          
+          class LocalCodeAssistant:
+              def __init__(self, model="codellama:7b", base_url="http://localhost:11434"):
+                  self.model = model
+                  self.base_url = base_url
+                  self.api_url = f"{base_url}/api/generate"
+              
+              def generate(self, prompt, system_prompt=None):
+                  """Send a prompt to the local LLM and get a response."""
+                  payload = {
+                      "model": self.model,
+                      "prompt": prompt,
+                      "stream": False
+                  }
+                  
+                  if system_prompt:
+                      payload["system"] = system_prompt
+                  
+                  try:
+                      response = requests.post(self.api_url, json=payload, timeout=120)
+                      response.raise_for_status()
+                      return response.json()["response"]
+                  except requests.exceptions.RequestException as e:
+                      return f"Error connecting to Ollama: {e}"
       </code></pre>
-    </section>
+      </section>
 
-    <!-- ==================== CONTEXT RETRIEVAL ==================== -->
-    <section>
-      <h2>Step 4 – Retrieve Relevant Project Context</h2>
-      <p>Instead of sending the whole repository, we embed nearby files and perform a similarity search (RAG).</p>
-      <pre><code class="language-python">
-# file: src/retriever.py
-from pathlib import Path
-from typing import List
-from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext, load_index_from_storage
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-
-class CodeRetriever:
-    def __init__(self, project_root: Path, embed_model: str = "sentence-transformers/all-MiniLM-L6-v2"):
-        self.project_root = project_root
-        self.embedding_model = HuggingFaceEmbedding(model_name=embed_model)
-        self.index_path = project_root / ".local_index"
-
-        if self.index_path.exists():
-            storage_ctx = StorageContext.from_defaults(persist_dir=self.index_path)
-            self.index = load_index_from_storage(storage_ctx)
-        else:
-            documents = SimpleDirectoryReader(input_files=self._collect_source_files()).load_data()
-            self.index = VectorStoreIndex.from_documents(
-                documents, embed_model=self.embedding_model
-            )
-            self.index.storage_context.persist(persist_dir=self.index_path)
-
-    def _collect_source_files(self) -> List[Path]:
-        # Include only typical source extensions, ignore venv/.git etc.
-        exts = {".py", ".js", ".ts", ".cpp", ".c", ".java", ".go", ".rs", ".tsx", ".jsx"}
-        ignore_dirs = {".git", "__pycache__", "node_modules", ".venv", ".local_index"}
-        files = []
-        for path in self.project_root.rglob("*"):
-            if path.is_dir() and path.name in ignore_dirs:
-                continue
-            if path.suffix in exts:
-                files.append(path)
-        return files
-
-    def retrieve(self, query: str, top_k: int = 5) -> str:
-        """Return concatenated relevant chunks."""
-        retriever = self.index.as_retriever(similarity_top_k=top_k)
-        results = retriever.retrieve(query)
-        # Simple concatenation with source file markers
-        context = ""
-        for node in results:
-            context += f"--- {node.metadata.get('source', 'unknown')} ---\\n"
-            context += node.text + "\\n\\n"
-        return context
+      <!-- ==================== AGENT ACTIONS ==================== -->
+      <section>
+        <h2>Step 4 – Code Assistant - Part 2: Agent Actions</h2>
+        <pre><code class="language-python">
+      def generate_code(self, description, language="python"):
+          """Generate code from a natural language description."""
+          system = f"You are an expert {language} programmer. Generate clean, efficient code."
+          prompt = f"Write {language} code that: {description}\n\nProvide only the code, no explanations."
+          return self.generate(prompt, system)
+      
+      def explain_code(self, code, language="python"):
+          """Explain what a piece of code does."""
+          system = f"You are a code reviewer explaining {language} code to developers."
+          prompt = f"Explain this {language} code:\n\n{code}"
+          return self.generate(prompt, system)
+      
+      def debug_code(self, code, error_message=""):
+          """Help debug code with optional error message."""
+          system = "You are a debugging expert. Analyze code and suggest fixes."
+          prompt = f"Debug this code:\n\n{code}\n\n"
+          if error_message:
+              prompt += f"Error message: {error_message}\n\n"
+          prompt += "Provide the bug explanation and fixed code."
+          return self.generate(prompt, system)
       </code></pre>
-    </section>
+      </section>
 
-    <!-- ==================== AGENT SERVICE (FASTAPI) ==================== -->
-    <section>
-      <h2>Step 5 – Expose the Agent via HTTP (FastAPI)</h2>
-      <pre><code class="language-python">
-# file: src/api.py
-import pathlib
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from .model import CodeLLM
-from .retriever import CodeRetriever
-
-app = FastAPI(title="Local Code‑Assist Agent")
-
-# Initialise once at import time
-PROJECT_ROOT = pathlib.Path.cwd()
-llm = CodeLLM()
-retriever = CodeRetriever(project_root=PROJECT_ROOT)
-
-class CompletionRequest(BaseModel):
-    # The snippet the user is editing (may be incomplete)
-    code: str
-    # Cursor offset in characters from the beginning of `code`
-    cursor: int
-    # Optional file path (used for better retrieval)
-    file_path: str | None = None
-
-@app.post("/complete")
-def complete(req: CompletionRequest):
-    # 1️⃣ Build retrieval query – we use the code + file name
-    query = f"File: {req.file_path or 'unknown'}\\nSnippet: {req.code[:req.cursor]}"
-    context = retriever.retrieve(query, top_k=5)
-
-    # 2️⃣ Construct prompt (few‑shot style)
-    prompt = f"""You are an AI coding assistant. Use the provided context to generate the most likely continuation for the user's code.
-### Context
-{context}
-### User code (cursor at ⬇️)
-{req.code[:req.cursor]}⬇️
-### Completion (only raw code, no explanations)"""
-    # 3️⃣ Call the model
-    try:
-        completion = llm.complete(prompt, max_new_tokens=256, temperature=0.1,
-                                 stop=["```", "<|endoftext|>"])
-        return {"completion": completion}
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=str(exc))
+      <!-- ==================== Code Assistant - Part 3: More Features ==================== -->
+      <section>
+        <h2>Step 5 – Code Assistant - Part 3: More Features</h2>
+        <pre><code class="language-python">
+      def add_documentation(self, code, language="python"):
+          """Add documentation/comments to code."""
+          system = f"Add clear documentation and comments to {language} code."
+          prompt = f"Add comprehensive documentation to this code:\n\n{code}"
+          return self.generate(prompt, system)
+      
+      def refactor_code(self, code, language="python"):
+          """Suggest refactoring improvements."""
+          system = f"You are a code quality expert specializing in {language}."
+          prompt = f"Refactor this code for better readability and performance:\n\n{code}"
+          return self.generate(prompt, system)
+      
+      def code_review(self, code, language="python"):
+          """Perform a code review."""
+          system = f"You are a senior {language} developer doing a code review."
+          prompt = f"Review this code and provide feedback:\n\n{code}"
+          return self.generate(prompt, system)
       </code></pre>
-      <p>Run with:</p>
-      <pre><code class="language-bash">
-uvicorn src.api:app --host 0.0.0.0 --port 8000 --workers 1
-      </code></pre>
-    </section>
+      </section>
 
-    <!-- ==================== SIMPLE CLI CLIENT ==================== -->
-    <section>
-      <h2>Step 6 – Quick CLI Demo</h2>
-      <pre><code class="language-python">
-# file: cli.py
-import argparse, json, sys, pathlib, requests
-
+      <!-- ==================== Code Assistant - Part 4: CLI Interface ==================== -->
+      <section>
+        <h2>Step 5 – Code Assistant - Part 4: CLI Interface</h2>
+        <pre><code class="language-python">
 def main():
-    parser = argparse.ArgumentParser(description="Local Copilot CLI")
-    parser.add_argument("file", type=pathlib.Path, help="File to edit")
-    parser.add_argument("-l", "--line", type=int, default=1, help="Line (1‑based) where cursor is")
-    parser.add_argument("-c", "--col", type=int, default=1, help="Column (1‑based) of cursor")
-    args = parser.parse_args()
-
-    src = args.file.read_text(encoding="utf-8")
-    lines = src.splitlines()
-    # Compute absolute char offset
-    cursor = sum(len(l)+1 for l in lines[:args.line-1]) + args.col-1
-
-    payload = {
-        "code": src,
-        "cursor": cursor,
-        "file_path": str(args.file)
-    }
-    resp = requests.post("http://127.0.0.1:8000/complete", json=payload)
-    if resp.ok:
-        out = resp.json()["completion"]
-        print("\\n--- Completion ---\\n")
-        print(out)
-    else:
-        print("Error:", resp.text, file=sys.stderr)
+    assistant = LocalCodeAssistant()
+    
+    print("🤖 Local Code Assistant")
+    print("=" * 50)
+    print("Commands: generate, explain, debug, document, refactor, review, quit")
+    print()
+    
+    while True:
+        command = input("\n> Command: ").strip().lower()
+        
+        if command == "quit":
+            break
+        elif command == "generate":
+            desc = input("  Description: ")
+            lang = input("  Language (default: python): ") or "python"
+            print("\n🔧 Generating code...\n")
+            print(assistant.generate_code(desc, lang))
+        elif command == "explain":
+            print("  Paste code (end with empty line):")
+            code = "\n".join(iter(input, ""))
+            print("\n📖 Explanation:\n")
+            print(assistant.explain_code(code))
+        # Add other commands similarly...
+        else:
+            print("Unknown command. Try: generate, explain, debug, document, refactor, review, quit")
 
 if __name__ == "__main__":
     main()
       </code></pre>
-    </section>
+      </section>
 
-    <!-- ==================== INTEGRATING WITH VS CODE ==================== -->
-    <section>
-      <h2>Step 7 – VS Code Extension (Conceptual)</h2>
-      <ul>
-        <li>Language Server Protocol (LSP) or plain <code>vscode.extension.api</code>.</li>
-        <li>Register a <code>completionItemProvider</code> for the desired languages.</li>
-        <li>On <code>provideCompletionItems</code>, send the current document + cursor to the FastAPI endpoint and return the result.</li>
-      </ul>
+      <section>
+        <h2>Live Demo Time! 🎬</h2>
+        <div class="demo-box">
+          <p><strong>Let's try:</strong></p>
+          <ol class="small-text">
+            <li>Generate a Python function for binary search</li>
+            <li>Ask the agent to explain it</li>
+            <li>Add comprehensive documentation</li>
+            <li>Request a refactored version</li>
+          </ol>
+        </div>
+        <div class="highlight-box" style="margin-top: 30px;">
+          <strong>Note:</strong> First request may take 10-15 seconds as the model loads into memory. Subsequent
+          requests are much faster (1-5 seconds).
+        </div>
+      </section>
 
-      <pre><code class="language-javascript">
-// src/extension.js (simplified)
-const vscode = require('vscode');
-const fetch = require('node-fetch');
+      <!-- Use Cases -->
+      <section>
+        <h2>Practical Use Cases</h2>
+        <div class="container small-text">
+          <div class="col">
+            <h4>Individual Developers</h4>
+            <ul>
+              <li>Quick code snippets</li>
+              <li>Learning new languages</li>
+              <li>Debugging help</li>
+              <li>Code documentation</li>
+            </ul>
+            <h4 style="margin-top: 20px;">Teams</h4>
+            <ul>
+              <li>Code review assistance</li>
+              <li>Consistent coding standards</li>
+            </ul>
+          </div>
+          <div class="col">
+            <h4>Enterprise</h4>
+            <ul>
+              <li>Proprietary code stays internal</li>
+              <li>Compliance requirements</li>
+              <li>Custom model fine-tuning</li>
+              <li>Air-gapped environments</li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
-function activate(context) {
-  const provider = vscode.languages.registerCompletionItemProvider(
-    [{ scheme: 'file', language: 'python' }, { language: 'javascript' }],
-    {
-      async provideCompletionItems(document, position, token, context) {
-        const text = document.getText();
-        const offset = document.offsetAt(position);
-        const response = await fetch('http://127.0.0.1:8000/complete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            code: text,
-            cursor: offset,
-            file_path: document.fileName,
-          }),
-        });
-        if (!response.ok) return null;
-        const data = await response.json();
-        return [new vscode.CompletionItem(data.completion, vscode.CompletionItemKind.Snippet)];
-      },
-    },
-    '.' // trigger on any character
-  );
-  context.subscriptions.push(provider);
-}
-exports.activate = activate;
-      </code></pre>
-      <p>Package with <code>vsce</code>, install locally, and you have a Copilot‑like experience that never leaves your machine.</p>
-    </section>
+      <!-- Challenges -->
+      <section>
+        <h2>Challenges & Solutions</h2>
+        <div class="pros-cons">
+          <div class="cons">
+            <h4>Challenges</h4>
+            <ul>
+              <li><strong>Quality:</strong> Local models < cloud models</li>
+              <li><strong>Speed:</strong> Slower without GPU</li>
+              <li><strong>Memory:</strong> 7B needs ~8GB RAM</li>
+              <li><strong>Context:</strong> Limited context window</li>
+            </ul>
+          </div>
+          <div class="pros">
+            <h4>Solutions</h4>
+            <ul>
+              <li>Use quantized models (Q4, Q5)</li>
+              <li>GPU acceleration with CUDA/Metal</li>
+              <li>Start with smaller models</li>
+              <li>Break tasks into smaller chunks</li>
+            </ul>
+          </div>
+        </div>
+      </section>
 
-    <!-- ==================== PERFORMANCE TUNING ==================== -->
-    <section>
-      <h2>Performance & Optimisation Tips</h2>
-      <ul>
-        <li><strong>Quantisation</strong> – 4‑bit (nf4) is best for 7 B; 8‑bit if GPU memory < 12 GB.</li>
-        <li><strong>Compile / TorchScript</strong> – <code>torch.compile</code> gives 1.5‑2× speedup on recent PyTorch releases.</li>
-        <li><strong>Batch retrieval</strong> – Retrieve once per file, cache per‑session.</li>
-        <li><strong>Async FastAPI</strong> – Use <code>async def</code> and <code>httpx.AsyncClient</code> for lower latency under load.</li>
-        <li><strong>Prompt caching</strong> – Store the last <code>n</code> prompts + outputs in an LRU cache for rapid repeat queries.</li>
-      </ul>
-    </section>
+      <!-- Best Practices -->
+      <section>
+        <h2>Best Practices</h2>
+        <ul>
+          <li><strong>Model Selection:</strong> Start with 7B models, upgrade if needed</li>
+          <li><strong>Prompt Engineering:</strong> Clear, specific prompts work best</li>
+          <li><strong>System Prompts:</strong> Set context and role for better results</li>
+          <li><strong>Iterative Refinement:</strong> Ask follow-up questions</li>
+          <li><strong>Validation:</strong> Always review generated code</li>
+          <li><strong>Version Control:</strong> Track what works, fine-tune prompts</li>
+        </ul>
+      </section>
 
-    <!-- ==================== SECURITY & PRIVACY ==================== -->
-    <section>
-      <h2>Security & Privacy Considerations</h2>
-      <ul>
-        <li>Run the service behind <code>localhost</code> or a Unix socket – no external exposure.</li>
-        <li>Never persist raw user code on disk; only keep embeddings (they are non‑reversible).</li>
-        <li>Validate incoming JSON schema (Pydantic) to avoid injection attacks.</li>
-        <li>If you expose via Docker, set <code>--network=host</code> only if you trust the host.</li>
-      </ul>
-    </section>
+      <!-- Advanced Topics -->
+      <section>
+        <h2>Advanced: RAG for Your Codebase</h2>
+        <div class="highlight-box small-text">
+          <p><strong>Retrieval-Augmented Generation (RAG)</strong> lets your agent understand your entire codebase:</p>
+        </div>
+        <img class="r-frame" style="background: rgba(255, 255, 255, 0.338);"
+          data-src="assets/rag-architecture-model.jpg" alt="RAG Workflow">
+      </section>
 
-    <!-- ==================== EXTENSIONS & Next Steps ==================== -->
-    <section>
-      <h2>Extending the Agent</h2>
-      <ul>
-        <li><strong>Multi‑turn chat</strong> – keep a conversation history in memory for better context.</li>
-        <li><strong>Static analysis hooks</strong> – run <code>ruff</code> or <code>pylint</code> on the generated code before returning.</li>
-        <li><strong>Fine‑tuning</strong> – collect your own snippets and use <code>trl</code> to further adapt the model.</li>
-        <li><strong>Multi‑modal</strong> – add a code‑graph (AST) embedding for deeper understanding.</li>
-      </ul>
-    </section>
+      <!-- IDE Integration -->
+      <section>
+        <h2>IDE Integration Options</h2>
+        <ul>
+          <li><strong>Continue.dev:</strong> VSCode/JetBrains plugin for local LLMs</li>
+          <li><strong>Ollama + Custom Extension:</strong> Build your own</li>
+          <li><strong>Language Server Protocol (LSP):</strong> Editor-agnostic</li>
+          <li><strong>Vim/Emacs plugins:</strong> Community options available</li>
+        </ul>
+        <div class="highlight-box" style="margin-top: 30px;">
+          <p><strong>Example:</strong> Continue.dev connects to Ollama with zero config and provides inline completions,
+            chat, and refactoring in VSCode.</p>
+        </div>
+      </section>
 
-    <section>
-      <h2>Resources</h2>
-      <ul>
-        <li>🤗 HuggingFace model hub – <a href="https://huggingface.co/codellama">codellama</a></li>
-        <li>LangChain & LlamaIndex – RAG libraries.</li>
-        <li>FastAPI docs – <a href="https://fastapi.tiangolo.com/">fastapi.tiangolo.com</a></li>
-        <li>VS Code Extension Authoring – <a href="https://code.visualstudio.com/api">code.visualstudio.com/api</a></li>
-        <li>Quantisation guide – <a href="https://github.com/TimDettmers/bitsandbytes">bitsandbytes</a></li>
-      </ul>
-    </section>
+      <!-- Model Comparison -->
+      <section>
+        <h2>Model Comparison</h2>
+        <table style="font-size: 0.6em; width: 100%;">
+          <thead>
+            <tr>
+              <th>Model</th>
+              <th>Size</th>
+              <th>Strengths</th>
+              <th>RAM Needed</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>CodeLlama 7B</td>
+              <td>3.8GB</td>
+              <td>Fast, good for snippets</td>
+              <td>8GB</td>
+            </tr>
+            <tr>
+              <td>DeepSeek Coder 6.7B</td>
+              <td>3.8GB</td>
+              <td>Strong coding, fast</td>
+              <td>8GB</td>
+            </tr>
+            <tr>
+              <td>CodeLlama 13B</td>
+              <td>7.4GB</td>
+              <td>Better reasoning</td>
+              <td>16GB</td>
+            </tr>
+            <tr>
+              <td>DeepSeek Coder 33B</td>
+              <td>19GB</td>
+              <td>Production quality</td>
+              <td>32GB</td>
+            </tr>
+            <tr>
+              <td>Qwen2.5-Coder 7B</td>
+              <td>4.7GB</td>
+              <td>Multilingual, recent</td>
+              <td>8GB</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
 
-    <section>
-      <h2>Thank you! 🎉</h2>
-      <p>Happy hacking with your own local AI coding assistant.</p>
-      <p>Questions? <a href="mailto:you@example.com">you@example.com</a></p>
-    </section>
+      <!-- Resources -->
+      <section>
+        <h2>Getting Started Resources</h2>
+        <div class="two-column small-text">
+          <div>
+            <h4>Tools & Platforms</h4>
+            <ul>
+              <li>Ollama: <a href="https://ollama.com">ollama.com</a></li>
+              <li>LM Studio: <a href="https://lmstudio.ai">lmstudio.ai</a></li>
+              <li>Continue.dev: <a href="https://continue.dev">continue.dev</a></li>
+              <li>HuggingFace: Models & datasets</li>
+            </ul>
+          </div>
+          <div>
+            <h4>Learning Resources</h4>
+            <ul>
+              <li>Ollama Documentation</li>
+              <li>HuggingFace Transformers Course</li>
+              <li>r/LocalLLaMA community</li>
+              <li>GitHub: awesome-local-ai</li>
+            </ul>
+          </div>
+        </div>
+        <div class="highlight-box" style="margin-top: 30px;">
+          <strong>Demo code available at:</strong> [Your GitHub repo]
+        </div>
+      </section>
 
+      <!-- Next Steps -->
+      <section>
+        <h2>Your Next Steps</h2>
+        <ol>
+          <li>Install Ollama and try <code>ollama run codellama</code></li>
+          <li>Experiment with the demo code assistant</li>
+          <li>Try different models for your use case</li>
+          <li>Integrate with your IDE (Continue.dev)</li>
+          <li>Build custom agents for your workflow</li>
+          <li>Explore RAG for codebase-aware assistance</li>
+        </ol>
+        <div class="highlight-box" style="margin-top: 30px;">
+          <strong>Remember:</strong> Local AI is rapidly evolving. What's challenging today may be trivial in 6 months!
+        </div>
+      </section>
+
+      <!-- Q&A -->
+      <section>
+        <h1>Questions?</h1>
+        <p>Thank you for attending!</p>
+        <div style="margin-top: 50px;">
+          <p>🔗 Demo Code: <br /><a
+              href="https://github.com/jlangfor/ieee-ai-agent.git">https://github.com/jlangfor/ieee-ai-agent.git</a></p>
+          <p>📧 Contact: <br /><a href="mailto:josh.langford@ieee.org">josh.langford@ieee.org</a></p>
+          <p>💬 Let's discuss local AI!</p>
+        </div>
+      </section>
+
+    </div>
   </div>
-</div>
 
-<script src="dist/reveal.js"></script>
-<script src="plugin/zoom/zoom.js"></script>
-<script src="plugin/notes/notes.js"></script>
-<script src="plugin/search/search.js"></script>
-<script src="plugin/markdown/markdown.js"></script>
-<script src="plugin/highlight/highlight.js"></script>
-<script>
+  <script src="dist/reveal.js"></script>
+  <script src="plugin/zoom/zoom.js"></script>
+  <script src="plugin/notes/notes.js"></script>
+  <script src="plugin/search/search.js"></script>
+  <script src="plugin/markdown/markdown.js"></script>
+  <script src="plugin/highlight/highlight.js"></script>
+  <script>
 
-  Reveal.initialize({
-    controls: true,
-    progress: true,
-    center: true,
-    hash: true,
+    Reveal.initialize({
+      controls: true,
+      progress: true,
+      center: true,
+      hash: true,
 
-    // Learn about plugins: https://revealjs.com/plugins/
-    plugins: [ RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight ]
-  });
+      // Learn about plugins: https://revealjs.com/plugins/
+      plugins: [RevealZoom, RevealNotes, RevealSearch, RevealMarkdown, RevealHighlight]
+    });
 
-</script>
+  </script>
 </body>
+
 </html>

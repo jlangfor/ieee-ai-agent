@@ -31,7 +31,6 @@ htmlcov/
 .tox/
 
 # Build artifacts
-dist/
 build/
 *.egg-info/
 
@@ -53,3 +52,4 @@ temp/
 
 # Models
 models
+sampleproject
