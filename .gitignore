@@ -1,0 +1,55 @@
+# Byte-code files
+*.pyc
+*.pyd
+*.pyo
+__pycache__/
+
+# Virtual environment
+.venv/
+venv/
+env/
+/bin/
+/include/
+/lib/
+/share/
+
+# Editor/IDE specific files
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Test/Coverage files
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+
+# Logs and temporary files
+*.log
+*.tmp
+temp/
+
+# Configuration files (if sensitive or environment-specific)
+# config.ini
+# .env
+
+# Jupyter Notebook files
+.ipynb_checkpoints/
+
+# Miscellaneous
+*~
+*.swp
+
+# Models
+models
