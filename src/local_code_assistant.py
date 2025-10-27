@@ -69,126 +69,142 @@ class LocalCodeAssistant:
             return "❌ Error: Request timed out. The model might be too large or slow."
         except requests.exceptions.RequestException as e:
             return f"❌ Error: {e}"
+        
+    @staticmethod
+    def _wrap_template(template: str, **kwargs: str) -> str:
+        """Simple keyword substitution; keeps the prompt templates tidy."""
+        return template.format(**kwargs)
     
     def generate_code(self, description: str, language: str = "python") -> str:
-        """
-        Generate code from a natural language description.
-        
-        Args:
-            description: What the code should do
-            language: Programming language (default: python)
-            
-        Returns:
-            Generated code
-        """
         system = (
-            f"You are an expert software engineer. Please write a {language} program that {description}."
-            f"Handle exceptions gracefully and return meaningful error codes/messages. Return only the code files, each preceded by a clear comment with the file name. Do not wrap the code in markdown fences or add extra commentary."
+            "You are an expert software engineer. "
+            "Please write a {lang} program that {desc}."
+            "Handle exceptions gracefully and return meaningful error codes/messages. "
+            "Return only the code files, each preceded by a clear comment with the file name. "
+            "Do not wrap the code in markdown fences or add extra commentary."
         )
-        prompt = (
-            f"Write a {language} program that {description}."
-        )
+        prompt = f"Write a {language} program that {description}."
+        system = self._wrap_template(system, lang=language, desc=description)
         return self.generate(prompt, system, temperature=0.3)
-    
+
     def refactor_code(self, code: str, language: str = "python") -> str:
-        """
-        Suggest refactoring improvements for better code quality.
-        
-        Args:
-            code: The code to refactor
-            language: Programming language (default: python)
-            
-        Returns:
-            Refactored code with improvements
-        """
         system = (
-            f"You are a code quality expert specializing in {language}. "
-            f"Refactor code for better readability, performance, and maintainability."
+            "You are a code quality expert specializing in {lang}. "
+            "Refactor code for better readability, performance, and maintainability."
         )
         prompt = (
-            f"Refactor this {language} code:\n\n{code}\n\n"
-            f"Improvements to consider:\n"
-            f"- Code structure and organization\n"
-            f"- Performance optimizations\n"
-            f"- Readability and naming\n"
-            f"- Best practices and patterns"
+            "Refactor this {lang} code:\n\n{code}\n\n"
+            "Improvements to consider:\n"
+            "- Code structure and organization\n"
+            "- Performance optimizations\n"
+            "- Readability and naming\n"
+            "- Best practices and patterns"
         )
+        system = self._wrap_template(system, lang=language)
+        prompt = self._wrap_template(prompt, lang=language, code=code)
         return self.generate(prompt, system, temperature=0.4)
-    
+
     def code_review(self, code: str, language: str = "python") -> str:
-        """
-        Perform a comprehensive code review.
-        
-        Args:
-            code: The code to review
-            language: Programming language (default: python)
-            
-        Returns:
-            Code review feedback
-        """
         system = (
-            f"You are a senior {language} developer conducting a code review. "
-            f"Provide constructive feedback on code quality, security, and best practices."
+            "You are a senior {lang} developer conducting a code review. "
+            "Provide constructive feedback on code quality, security, and best practices."
         )
         prompt = (
-            f"Review this {language} code:\n\n{code}\n\n"
-            f"Provide feedback on:\n"
-            f"1. Code quality and style\n"
-            f"2. Potential bugs or issues\n"
-            f"3. Performance considerations\n"
-            f"4. Security concerns\n"
-            f"5. Suggestions for improvement"
+            "Review this {lang} code:\n\n{code}\n\n"
+            "Provide feedback on:\n"
+            "1. Code quality and style\n"
+            "2. Potential bugs or issues\n"
+            "3. Performance considerations\n"
+            "4. Security concerns\n"
+            "5. Suggestions for improvement"
         )
+        system = self._wrap_template(system, lang=language)
+        prompt = self._wrap_template(prompt, lang=language, code=code)
         return self.generate(prompt, system, temperature=0.5)
-    
+
     def optimize_code(self, code: str, language: str = "python") -> str:
-        """
-        Optimize code for better performance.
-        
-        Args:
-            code: The code to optimize
-            language: Programming language (default: python)
-            
-        Returns:
-            Optimized code with explanations
-        """
         system = (
-            f"You are a performance optimization expert for {language}. "
-            f"Improve code efficiency while maintaining correctness."
+            "You are a performance optimization expert for {lang}. "
+            "Improve code efficiency while maintaining correctness."
         )
         prompt = (
-            f"Optimize this {language} code for performance:\n\n{code}\n\n"
-            f"Focus on:\n"
-            f"- Time complexity\n"
-            f"- Space complexity\n"
-            f"- Algorithmic improvements\n"
-            f"Explain the optimizations made."
+            "Optimize this {lang} code for performance:\n\n{code}\n\n"
+            "Focus on:\n"
+            "- Time complexity\n"
+            "- Space complexity\n"
+            "- Algorithmic improvements\n"
+            "Explain the optimizations made."
         )
+        system = self._wrap_template(system, lang=language)
+        prompt = self._wrap_template(prompt, lang=language, code=code)
         return self.generate(prompt, system, temperature=0.3)
-    
+
     def test_code(self, code: str, language: str = "python") -> str:
-        """
-        Generate unit tests for the given code.
-        
-        Args:
-            code: The code to test
-            language: Programming language (default: python)
-            
-        Returns:
-            Unit tests for the code
-        """
         system = (
-            f"You are a test automation expert for {language}. "
-            f"Write comprehensive unit tests with edge cases."
+            "You are a test automation expert for {lang}. "
+            "Write comprehensive unit tests with edge cases."
         )
         prompt = (
-            f"Generate unit tests for this {language} code:\n\n{code}\n\n"
-            f"Include:\n"
-            f"- Normal cases\n"
-            f"- Edge cases\n"
-            f"- Error cases\n"
-            f"- Appropriate test framework (pytest for Python, JUnit for Java, etc.)"
+            "Generate unit tests for this {lang} code:\n\n{code}\n\n"
+            "Include:\n"
+            "- Normal cases\n"
+            "- Edge cases\n"
+            "- Error cases\n"
+            "- Appropriate test framework (pytest for Python, JUnit for Java, etc.)"
         )
+        system = self._wrap_template(system, lang=language)
+        prompt = self._wrap_template(prompt, lang=language, code=code)
+        return self.generate(prompt, system, temperature=0.3)
+
+    def explain_code(self, code: str, language: str = "python") -> str:
+        system = (
+            "You are a senior {lang} developer explaining code. "
+            "Provide a detailed analysis of the code."
+        )
+        prompt = (
+            "Explain this {lang} code:\n\n{code}\n\n"
+            "Cover:\n"
+            "1. Structure and intention\n"
+            "2. Key algorithms\n"
+            "3. Possible improvements\n"
+            "4. Common pitfalls"
+        )
+        system = self._wrap_template(system, lang=language)
+        prompt = self._wrap_template(prompt, lang=language, code=code)
+        return self.generate(prompt, system, temperature=0.3)
+
+    def debug_code(self, code: str, language: str = "python") -> str:
+        system = (
+            "You are a senior software engineer for {lang}. "
+            "Help debug the given code."
+        )
+        prompt = (
+            "Debug the following {lang} code:\n\n{code}\n\n"
+            "Verify:\n"
+            "- The code has a logical or syntax error\n"
+            "- If there is an error, provide a fix\n"
+            "- Suggested test cases\n"
+            "- Recommendations for robustness"
+        )
+        system = self._wrap_template(system, lang=language)
+        prompt = self._wrap_template(prompt, lang=language, code=code)
+        return self.generate(prompt, system, temperature=0.3)
+
+    def add_documentation(self, code: str, language: str = "python") -> str:
+        system = (
+            "You are a senior software engineer for {lang}. "
+            "Write detailed documentation for the given code."
+        )
+        prompt = (
+            "Generate comprehensive documentation for this {lang} code:\n\n{code}\n\n"
+            "Include:\n"
+            "- Function documentation\n"
+            "- Parameter details\n"
+            "- In‑line comments for clarity\n"
+            "- Module‑level description\n"
+        )
+        system = self._wrap_template(system, lang=language)
+        prompt = self._wrap_template(prompt, lang=language, code=code)
         return self.generate(prompt, system, temperature=0.3)
 
 
@@ -280,10 +296,9 @@ def main():
                     
                 elif command == "debug":
                     code = get_multiline_input("\n  📋 Paste your code:")
-                    error = input("  ⚠️  Error message (optional): ").strip()
                     language = input("  💻 Language (default: python): ").strip() or "python"
                     print("\n🔄 Debugging code...\n")
-                    result = assistant.debug_code(code, error, language)
+                    result = assistant.debug_code(code, language)
                     print(f"\n{'='*70}\n{result}\n{'='*70}")
                     
                 elif command == "document":

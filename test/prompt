@@ -1,0 +1,12 @@
+#Create a half pyramid of stars based on the number of rows.
+
+def create_half_pyramid(rows):
+    if not isinstance(rows, int) or rows < 1:
+        raise ValueError("Invalid input value for 'rows'. Must be a positive integer.")
+
+    pyramid = []
+    for i in range(rows):
+        row = "*" * (i + 1)
+        pyramid.append(row)
+
+    return pyramid
